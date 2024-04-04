@@ -38,7 +38,7 @@ jobs:
           aws configure set region $AWS_DEFAULT_REGION
 
       - name: Install Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Apply Terraform configuration
         run: terraform apply -auto-approve  # Be cautious with auto-approve in production

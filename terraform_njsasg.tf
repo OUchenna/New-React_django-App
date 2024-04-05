@@ -35,14 +35,5 @@ resource "aws_autoscaling_group" "nodejs" {
   min_size              = 2  # Minimum number of Node.js instances
   max_size              = 4  # Maximum number of Node.js instances
   desired_capacity      = 2  # Initial number of Node.js instances
-
-  # Configure scaling based on application metrics (replace with your needs)
-  # health_check_type = "ELB"  # If using an ELB
-  # target_tracking_configuration {
-  #   predefined_metric_specification {
-  #     predefined_metric_type = "CPUUtilization"
-  #     target_value           = 70.0
-  #   }
-  # }
 }
 

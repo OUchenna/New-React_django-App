@@ -29,12 +29,12 @@ resource "aws_instance_launch_template" "nodejs" {
 }
 
 resource "aws_autoscaling_group" "nodejs" {
-  name = "NodejsAutoscalingGroup"
-  vpc_zone_identifier = [subnet-031386d14a0b64bfe]
-  launch_template = aws_instance_launch_template.nodejs.id
-  min_size = 2  # Minimum number of Node.js instances
-  max_size = 4  # Maximum number of Node.js instances
-  desired_capacity = 2  # Initial number of Node.js instances
+  name                  = "NodejsAutoscalingGroup"
+  vpc_zone_identifier   = ["subnet-031386d14a0b64bfe"]
+  launch_template       = aws_instance_launch_template.nodejs.id
+  min_size              = 2  # Minimum number of Node.js instances
+  max_size              = 4  # Maximum number of Node.js instances
+  desired_capacity      = 2  # Initial number of Node.js instances
 
   # Configure scaling based on application metrics (replace with your needs)
   # health_check_type = "ELB"  # If using an ELB
@@ -43,3 +43,6 @@ resource "aws_autoscaling_group" "nodejs" {
   #     predefined_metric_type = "CPUUtilization"
   #     target_value           = 70.0
   #   }
+  # }
+}
+

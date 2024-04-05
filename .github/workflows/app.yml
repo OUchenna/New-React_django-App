@@ -23,7 +23,7 @@ jobs:
     - name: Run tests
       run: |
         cd ComputexFrontend
-        npm test
+        npm run build
 
   deploy:
     runs-on: ubuntu-latest

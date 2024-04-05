@@ -53,7 +53,7 @@ jobs:
       run: npm run build # Assuming your build command is 'npm run build'
       
     - name: Install Nginx
-        run: sudo apt-get update && sudo apt-get install nginx -y
+      run: sudo apt-get update && sudo apt-get install nginx -y
 
       - name: Configure Nginx
         run: |

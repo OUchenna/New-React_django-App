@@ -52,16 +52,26 @@ jobs:
     - name: Build React app
       run: npm run build # Assuming your build command is 'npm run build'
     
-    - name: Install Nginx
-      run: sudo apt-get update && sudo apt-get install nginx -y
-
-    - name: Configure Nginx
-      run: |
-        sudo cp -r ComputexFrontend/dist/* /var/www/html
-        sudo systemctl restart nginx
-
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: react-app-build
         path: ./ComputexFrontend/build # Update with your build output path
+
+    - name: Deploy with Nginx
+        uses: appleboy/nginx@v1
+        with:
+          conf: |
+            server {
+              listen 80;
+
+              root /usr/share/nginx/html;
+
+              index index.html;
+
+              location / {
+                try_files $uri /index.html;
+              }
+
+              error_page 404 /index.html;
+            }

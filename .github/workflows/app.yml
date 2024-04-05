@@ -59,8 +59,8 @@ jobs:
         path: ./ComputexFrontend/build # Update with your build output path
 
     - name: Deploy with Nginx
-        uses: appleboy/nginx@v1
-        with:
+      uses: appleboy/nginx@v1
+      with:
           conf: |
             server {
               listen 80;

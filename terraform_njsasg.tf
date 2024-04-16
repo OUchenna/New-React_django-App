@@ -1,4 +1,4 @@
-resource "aws_instance_launch_template" "nodejs" {
+resource "aws_launch_template" "nodejs" {
   name = "NodejsLaunchTemplate"
   image_id = "ami-080e1f13689e07408" # Update with your desired Node.js AMI
   instance_type = "t2.micro" # Update with desired instance type
@@ -10,7 +10,7 @@ resource "aws_instance_launch_template" "nodejs" {
   sudo apt-get update && sudo apt-get install -y nodejs
 
   # Clone your React app repository from Github (replace with your details)
-  git clone https://github.com/OUchenna/New-React_django-App.git
+  git clone https://github.com/OUchenna/New-React-django-App.git
 
   # Navigate to the application directory
   cd New-React-Django-App/ComputexFrontend
@@ -29,11 +29,16 @@ resource "aws_instance_launch_template" "nodejs" {
 }
 
 resource "aws_autoscaling_group" "nodejs" {
-  name                  = "NodejsAutoscalingGroup"
-  vpc_zone_identifier   = ["subnet-031386d14a0b64bfe"]
-  launch_template       = aws_instance_launch_template.nodejs.id
-  min_size              = 2  # Minimum number of Node.js instances
-  max_size              = 4  # Maximum number of Node.js instances
-  desired_capacity      = 2  # Initial number of Node.js instances
+  name               = "NodejsAutoscalingGroup"
+  vpc_zone_identifier = ["subnet-031386d14a0b64bfe"]
+
+  # Use a launch_template block to reference the launch template
+  launch_template {
+    id = aws_launch_template.nodejs.id
+  }
+
+  min_size           = 2  # Minimum number of Node.js instances
+  max_size           = 4  # Maximum number of Node.js instances
+  desired_capacity   = 2  # Initial number of Node.js instances
 }
 

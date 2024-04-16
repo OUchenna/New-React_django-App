@@ -1,6 +1,13 @@
+# Define the web server instance
+resource "aws_instance" "webserver" {
+  # Configure your web server instance here
+  # ... (AMI, instance type, security groups, etc.)
+}
+
+# Define the web server security group
 resource "aws_security_group" "web" {
   name = "WebServerSecurityGroup"
-  vpc_id = vpc-0b82f3e5aa0c4a472
+  vpc_id = aws_vpc.main.id  # Reference the VPC by its ID attribute (.id)
 
   ingress {
     from_port = 22
@@ -24,6 +31,7 @@ resource "aws_security_group" "web" {
   }
 }
 
+# Define the database security group
 resource "aws_security_group" "db" {
   name = "DatabaseSecurityGroup"
   vpc_id = aws_vpc.main.id
@@ -42,3 +50,4 @@ resource "aws_security_group" "db" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+

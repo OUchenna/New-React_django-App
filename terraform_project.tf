@@ -68,14 +68,12 @@ resource "aws_autoscaling_group" "nodejs" {
 
 
 
-data "aws_autoscaling_instances" "nodejs_instances" {
-  filter {
-    name   = "auto-scaling-group"
-    values = [aws_autoscaling_group.nodejs.name]
-  }
+data "aws_instance" "nodejs_instances" {
+  count       = length(aws_autoscaling_group.nodejs.instance_id)
+  instance_id = aws_autoscaling_group.nodejs.instance_id[count.index]
 }
 
 output "nodejs_instance_ips" {
-  value       = data.aws_autoscaling_instances.nodejs_instances.private_ips
+  value       = [for instance in data.aws_instance.nodejs_instances : instance.private_ip]
   description = "Private IP addresses of the Node.js instances"
 }

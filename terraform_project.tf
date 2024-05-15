@@ -66,7 +66,16 @@ resource "aws_autoscaling_group" "nodejs" {
   desired_capacity = 2 # Initial number of Node.js instances
 }
 
+
+
+data "aws_autoscaling_instances" "nodejs_instances" {
+  filter {
+    name   = "auto-scaling-group"
+    values = [aws_autoscaling_group.nodejs.name]
+  }
+}
+
 output "nodejs_instance_ips" {
-  value       = [for instance in aws_autoscaling_group.nodejs.instances : instance.private_ip]
+  value       = data.aws_autoscaling_instances.nodejs_instances.private_ips
   description = "Private IP addresses of the Node.js instances"
 }

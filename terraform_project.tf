@@ -69,7 +69,10 @@ resource "aws_autoscaling_group" "nodejs" {
 
 
 data "aws_instance" "nodejs_instances" {
-  for_each    = { for instance in aws_autoscaling_group.nodejs.instances : instance.instance_id => instance.instance_id }
+  for_each = toset([
+    for instance in aws_autoscaling_group.nodejs.instances :
+    instance.id
+  ])
   instance_id = each.value
 }
 

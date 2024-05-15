@@ -70,12 +70,16 @@ data "aws_autoscaling_groups" "nodejs" {
   names = ["NodejsAutoscalingGroup"]
 }
 
+locals {
+  nodejs_autoscaling_group_names = length(data.aws_autoscaling_groups.nodejs.names) > 0 ? toset(data.aws_autoscaling_groups.nodejs.names) : []
+}
+
 data "aws_instances" "nodejs_instances" {
-  for_each = data.aws_autoscaling_groups.nodejs.names
+  for_each = local.nodejs_autoscaling_group_names
 
   filter {
     name   = "tag:aws:autoscaling:groupName"
-    values = [each.value]
+    values = [each.key]
   }
 }
 
@@ -84,8 +88,4 @@ output "nodejs_instance_ips" {
   description = "Private IP addresses of the Node.js instances"
 }
 
-
-provider "aws" {
-  region = "us-east-1" # Replace with your desired AWS region
-}
 

@@ -84,3 +84,8 @@ output "nodejs_instance_ips" {
   description = "Private IP addresses of the Node.js instances"
 }
 
+
+provider "aws" {
+  region = "us-east-1" # Replace with your desired AWS region
+}
+

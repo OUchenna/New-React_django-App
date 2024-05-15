@@ -1,6 +1,6 @@
 resource "aws_security_group" "nodejs" {
   name   = "NodejsSecurityGroup"
-  vpc_id = vpc-0b82f3e5aa0c4a472 # Replace with your VPC ID
+  vpc_id = aws_vpc.main.id # Replace with your VPC ID
 
   ingress {
     from_port   = 22

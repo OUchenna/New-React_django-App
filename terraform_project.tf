@@ -67,7 +67,6 @@ resource "aws_autoscaling_group" "nodejs" {
 }
 
 output "nodejs_instance_ips" {
-  value = aws_autoscaling_group.nodejs.instances.*.private_ip
+  value       = [for instance in aws_autoscaling_group.nodejs.instances : instance.private_ip]
+  description = "Private IP addresses of the Node.js instances"
 }
-
-# ... (other resources)

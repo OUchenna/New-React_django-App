@@ -69,8 +69,8 @@ resource "aws_autoscaling_group" "nodejs" {
 
 
 data "aws_instance" "nodejs_instances" {
-  count       = length(aws_autoscaling_group.nodejs.instance_id)
-  instance_id = aws_autoscaling_group.nodejs.instance_id[count.index]
+  for_each    = { for instance in aws_autoscaling_group.nodejs.instances : instance.instance_id => instance.instance_id }
+  instance_id = each.value
 }
 
 output "nodejs_instance_ips" {

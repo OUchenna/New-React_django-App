@@ -89,3 +89,18 @@ output "nodejs_instance_ips" {
 }
 
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Your AWS resources (e.g., aws_security_group, aws_launch_template, aws_autoscaling_group, etc.)
+

@@ -67,7 +67,7 @@ resource "aws_autoscaling_group" "nodejs" {
 }
 
 data "aws_autoscaling_groups" "nodejs" {
-  names = ["NodejsAutoscalingGroup"]
+  names = []
 }
 
 locals {

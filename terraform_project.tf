@@ -31,27 +31,10 @@ resource "aws_launch_template" "nodejs" {
 
   vpc_security_group_ids = [aws_security_group.nodejs.id]
 
-  user_data = <<-EOF
-    # Install Node.js and package manager
-    curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    sudo apt-get update && sudo apt-get install -y nodejs
-
-    # Clone your React app repository from Github (replace with your details)
-    git clone https://github.com/OUchenna/New-React-django-App.git
-
-    # Navigate to the application directory
-    cd New-React-Django-App/ComputexFrontend
-
-    # Install dependencies
-    npm install
-
-    # Build the React app
-    npm run build
-
-    # Start your Node.js server (replace with your start command)
-    npm start
-  EOF
+  user_data = "IyBJbnN0YWxsIE5vZGUuanMgYW5kIHBhY2thZ2UgbWFuYWdlcgpjdXJsIC1zTCBodHRwczovL2RlYi5ub2Rlc291cmNlLmNvbS9zZXR1cF8xOC54IHwgc3VkbyAtRSBiYXNoIC0Kc3VkbyBhcHQtZ2V0IHVwZGF0ZSAmJiBzdWRvIGFwdC1nZXQgaW5zdGFsbCAteSBub2RlanMKCiMgQ2xvbmUgeW91ciBSZWFjdCBhcHAgcmVwb3NpdG9ySBmcm9tIEdpdGh1YiAocmVwbGFjZSB3aXRoIHlvdXIgZGV0YWlscykKZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9PVWNoZW5uYS9OZXctUmVhY3QtZGphbmdvLUFwcC5naXQKCiMgTmF2aWdhdGUgdG8gdGhlIGFwcGxpY2F0aW9uIGRpcmVjdG9yeQpjZCBOZXctmVhY3QtRGphbmdvLUFwcC9Db21wdXRleEZyb250ZW5kCgojIEluc3RhbGwgZGVwZW5kZW5jaWVzCm5wbSBpbnN0YWxsCgojIEJ1aWxkIHRoZSBSZWFjdCBhcHAKbnBtIHJ1biBidWlsZAoKIyBTdGFydCB5b3VyIE5vZGUuanMgc2VydmVyIChyZXBsYWNlIHdpdGggeW91ciBzdGFydCBjb21tYW5kKQpucG0gc3RhcnQK"
 }
+
+
 
 resource "aws_autoscaling_group" "nodejs" {
   name                = "NodejsAutoscalingGroup"

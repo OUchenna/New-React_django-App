@@ -66,16 +66,10 @@ resource "aws_autoscaling_group" "nodejs" {
   desired_capacity = 2 # Initial number of Node.js instances
 }
 
-data "aws_autoscaling_groups" "nodejs" {
-  names = []
-}
-
-locals {
-  nodejs_autoscaling_group_names = length(data.aws_autoscaling_groups.nodejs.names) > 0 ? toset(data.aws_autoscaling_groups.nodejs.names) : []
-}
+data "aws_autoscaling_groups" "nodejs" {}
 
 data "aws_instances" "nodejs_instances" {
-  for_each = local.nodejs_autoscaling_group_names
+  for_each = data.aws_autoscaling_groups.nodejs.names
 
   filter {
     name   = "tag:aws:autoscaling:groupName"
@@ -87,6 +81,7 @@ output "nodejs_instance_ips" {
   value       = [for instance in data.aws_instances.nodejs_instances : instance.private_ip]
   description = "Private IP addresses of the Node.js instances"
 }
+
 
 
 terraform {

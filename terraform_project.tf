@@ -68,8 +68,12 @@ resource "aws_autoscaling_group" "nodejs" {
 
 data "aws_autoscaling_groups" "nodejs" {}
 
+locals {
+  autoscaling_group_names = length(data.aws_autoscaling_groups.nodejs.names) > 0 ? toset(data.aws_autoscaling_groups.nodejs.names) : []
+}
+
 data "aws_instances" "nodejs_instances" {
-  for_each = data.aws_autoscaling_groups.nodejs.names
+  for_each = local.autoscaling_group_names
 
   filter {
     name   = "tag:aws:autoscaling:groupName"

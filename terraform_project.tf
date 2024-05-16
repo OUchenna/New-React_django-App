@@ -1,3 +1,13 @@
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "example" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+}
+
 resource "aws_security_group" "nodejs" {
   name   = "NodejsSecurityGroup"
   vpc_id = aws_vpc.main.id # Replace with your VPC ID
@@ -36,7 +46,7 @@ resource "aws_launch_template" "nodejs" {
 
 resource "aws_autoscaling_group" "nodejs" {
   name                = "NodejsAutoscalingGroup"
-  vpc_zone_identifier = [aws_subnet.main.id] # Replace with your subnet ID
+  vpc_zone_identifier = [aws_subnet.example.id] # Replace with your subnet ID
 
   launch_template {
     id = aws_launch_template.nodejs.id
@@ -45,9 +55,6 @@ resource "aws_autoscaling_group" "nodejs" {
   min_size         = 2 # Minimum number of Node.js instances
   max_size         = 4 # Maximum number of Node.js instances
   desired_capacity = 2 # Initial number of Node.js instances
-
-  # Link security group to VPC
-
 }
 
 data "aws_autoscaling_groups" "nodejs" {}
@@ -83,8 +90,12 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Ensure that the security group is associated with the VPC
-resource "aws_security_group_attachment" "nodejs_attachment" {
+# Associate security group with the VPC
+resource "aws_security_group_rule" "nodejs_vpc_association" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.nodejs.id
-  vpc_id            = aws_vpc.main.id
 }

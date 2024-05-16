@@ -34,11 +34,9 @@ resource "aws_launch_template" "nodejs" {
   user_data = "IyBJbnN0YWxsIE5vZGUuanMgYW5kIHBhY2thZ2UgbWFuYWdlcgpjdXJsIC1zTCBodHRwczovL2RlYi5ub2Rlc291cmNlLmNvbS9zZXR1cF8xOC54IHwgc3VkbyAtRSBiYXNoIC0Kc3VkbyBhcHQtZ2V0IHVwZGF0ZSAmJiBzdWRvIGFwdC1nZXQgaW5zdGFsbCAteSBub2RlanMKCiMgQ2xvbmUgeW91ciBSZWFjdCBhcHAgcmVwb3NpdG9yeSBmcm9tIEdpdGh1YiAocmVwbGFjZSB3aXRoIHlvdXIgZGV0YWlscykKZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9PVWNoZW5uYS9OZXctUmVhY3QtZGphbmdvLUFwcC5naXQKCiMgTmF2aWdhdGUgdG8gdGhlIGFwcGxpY2F0aW9uIGRpcmVjdG9yeQpjZCBOZXctUmVhY3QtRGphbmdvLUFwcC9Db21wdXRleEZyb250ZW5kCgojIEluc3RhbGwgZGVwZW5kZW5jaWVzCm5wbSBpbnN0YWxsCgojIEJ1aWxkIHRoZSBSZWFjdCBhcHAKbnBtIHJ1biBidWlsZAoKIyBTdGFydCB5b3VyIE5vZGUuanMgc2VydmVyIChyZXBsYWNlIHdpdGggeW91ciBzdGFydCBjb21tYW5kKQpucG0gc3RhcnQK"
 }
 
-
-
 resource "aws_autoscaling_group" "nodejs" {
   name                = "NodejsAutoscalingGroup"
-  vpc_zone_identifier = ["subnet-031386d14a0b64bfe"]
+  vpc_zone_identifier = [aws_subnet.main.id] # Replace with your subnet ID
 
   launch_template {
     id = aws_launch_template.nodejs.id
@@ -47,6 +45,9 @@ resource "aws_autoscaling_group" "nodejs" {
   min_size         = 2 # Minimum number of Node.js instances
   max_size         = 4 # Maximum number of Node.js instances
   desired_capacity = 2 # Initial number of Node.js instances
+
+  # Link security group to VPC
+
 }
 
 data "aws_autoscaling_groups" "nodejs" {}
@@ -69,8 +70,6 @@ output "nodejs_instance_ips" {
   description = "Private IP addresses of the Node.js instances"
 }
 
-
-
 terraform {
   required_providers {
     aws = {
@@ -84,5 +83,8 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Your AWS resources (e.g., aws_security_group, aws_launch_template, aws_autoscaling_group, etc.)
-
+# Ensure that the security group is associated with the VPC
+resource "aws_security_group_attachment" "nodejs_attachment" {
+  security_group_id = aws_security_group.nodejs.id
+  vpc_id            = aws_vpc.main.id
+}

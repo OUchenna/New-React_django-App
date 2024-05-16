@@ -11,7 +11,7 @@ resource "aws_subnet" "example" {
 
 resource "aws_security_group" "nodejs" {
   name   = "NodejsSecurityGroup"
-  vpc_id = aws_vpc.main.id # Replace with your VPC ID
+  vpc_id = vpc-0b82f3e5aa0c4a472 # Replace with your VPC ID
 
   ingress {
     from_port   = 22
@@ -47,7 +47,7 @@ resource "aws_launch_template" "nodejs" {
 
 resource "aws_autoscaling_group" "nodejs" {
   name                = "NodejsAutoscalingGroup"
-  vpc_zone_identifier = [aws_subnet.example.id] # Replace with your subnet ID
+  vpc_zone_identifier = [subnet-031386d14a0b64bfe] # Replace with your subnet ID
 
   launch_template {
     id = aws_launch_template.nodejs.id

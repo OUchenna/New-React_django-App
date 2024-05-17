@@ -37,7 +37,7 @@ resource "aws_security_group" "nodejs" {
 }
 
 resource "aws_launch_template" "nodejs" {
-  name          = "NodejsLaunchTemplate"
+  name          = "TerraformProject"
   image_id      = "ami-04b70fa74e45c3917" # Update with your desired Node.js AMI
   instance_type = "t2.micro"              # Update with desired instance type
 

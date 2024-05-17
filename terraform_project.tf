@@ -10,8 +10,9 @@ resource "aws_subnet" "example" {
 }
 
 resource "aws_security_group" "nodejs" {
-  name   = "NodejsSecurityGroup"
-  vpc_id = vpc-0b82f3e5aa0c4a472 # Replace with your VPC ID
+  name        = "NodejsSecurityGroup"
+  description = "Security group for Node.js application"
+  vpc_id      = aws_vpc.main.id # Reference the VPC ID using the name "main"
 
   ingress {
     from_port   = 22

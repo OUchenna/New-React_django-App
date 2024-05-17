@@ -49,7 +49,9 @@ jobs:
         run: terraform apply -auto-approve  # Be cautious with auto-approve in production
 
       - name: Build React app
-        run: npm run build  # Assuming your build command is 'npm run build'
+        run: |
+          cd ComputexFrontend
+          npm run build  # Assuming your build command is 'npm run build'
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3

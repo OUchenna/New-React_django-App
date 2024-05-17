@@ -76,7 +76,9 @@ data "aws_instances" "nodejs_instances" {
 }
 
 output "nodejs_instance_ips" {
-  value       = [for instance in data.aws_instances.nodejs_instances : instance.private_ip]
+  value = [for group_name, group in data.aws_autoscaling_groups.nodejs : [
+    for instance in group.instances : instance.private_ip
+  ]]
   description = "Private IP addresses of the Node.js instances"
 }
 

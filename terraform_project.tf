@@ -1,4 +1,3 @@
-
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
@@ -12,20 +11,20 @@ resource "aws_subnet" "example" {
 resource "aws_security_group" "nodejs" {
   name        = "NodejsSecurityGroup"
   description = "Security group for Node.js application"
-  vpc_id      = aws_vpc.main.id # Reference the VPC ID using the name "main"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Update to restrict access (e.g., your IP)
+    cidr_blocks = ["your_ip_address/32"] # Update with your IP
   }
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Update to restrict access if needed
+    cidr_blocks = ["your_ip_address/32"] # Update with your IP
   }
 
   egress {
@@ -36,49 +35,61 @@ resource "aws_security_group" "nodejs" {
   }
 }
 
+# Associate security group with the VPC
+resource "aws_security_group_rule" "nodejs_vpc_association" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.nodejs.id
+}
+
 resource "aws_launch_template" "nodejs" {
   name          = "TerraformProject"
   image_id      = "ami-04b70fa74e45c3917" # Update with your desired Node.js AMI
-  instance_type = "t2.micro"              # Update with desired instance type
+  instance_type = "t2.micro"
 
   vpc_security_group_ids = [aws_security_group.nodejs.id]
 
-  user_data = "IyBJbnN0YWxsIE5vZGUuanMgYW5kIHBhY2thZ2UgbWFuYWdlcgpjdXJsIC1zTCBodHRwczovL2RlYi5ub2Rlc291cmNlLmNvbS9zZXR1cF8xOC54IHwgc3VkbyAtRSBiYXNoIC0Kc3VkbyBhcHQtZ2V0IHVwZGF0ZSAmJiBzdWRvIGFwdC1nZXQgaW5zdGFsbCAteSBub2RlanMKCiMgQ2xvbmUgeW91ciBSZWFjdCBhcHAgcmVwb3NpdG9yeSBmcm9tIEdpdGh1YiAocmVwbGFjZSB3aXRoIHlvdXIgZGV0YWlscykKZ2l0IGNsb25lIGh0dHBzOi8vZ2l0aHViLmNvbS9PVWNoZW5uYS9OZXctUmVhY3QtZGphbmdvLUFwcC5naXQKCiMgTmF2aWdhdGUgdG8gdGhlIGFwcGxpY2F0aW9uIGRpcmVjdG9yeQpjZCBOZXctUmVhY3QtRGphbmdvLUFwcC9Db21wdXRleEZyb250ZW5kCgojIEluc3RhbGwgZGVwZW5kZW5jaWVzCm5wbSBpbnN0YWxsCgojIEJ1aWxkIHRoZSBSZWFjdCBhcHAKbnBtIHJ1biBidWlsZAoKIyBTdGFydCB5b3VyIE5vZGUuanMgc2VydmVyIChyZXBsYWNlIHdpdGggeW91ciBzdGFydCBjb21tYW5kKQpucG0gc3RhcnQK"
+  user_data = <<-EOF
+  #!/bin/bash
+  curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+  sudo apt-get update && sudo apt-get install -y nodejs
+  git clone https://github.com/OUchenna/New-React-django-App.git
+  cd New-React-django-App/ComputerXFrontend
+  npm install
+  npm run build
+  npm start
+  EOF
 }
 
 resource "aws_autoscaling_group" "nodejs" {
   name                = "NodejsAutoscalingGroup"
-  vpc_zone_identifier = [aws_subnet.example.id] # Replace with your subnet ID
-
+  vpc_zone_identifier = [aws_subnet.example.id]
 
   launch_template {
     id = aws_launch_template.nodejs.id
   }
 
-  min_size         = 2 # Minimum number of Node.js instances
-  max_size         = 4 # Maximum number of Node.js instances
-  desired_capacity = 2 # Initial number of Node.js instances
+  min_size         = 2
+  max_size         = 4
+  desired_capacity = 2
 }
 
-data "aws_autoscaling_groups" "nodejs" {}
-
-locals {
-  autoscaling_group_names = length(data.aws_autoscaling_groups.nodejs.names) > 0 ? toset(data.aws_autoscaling_groups.nodejs.names) : []
+data "aws_autoscaling_group" "nodejs" {
+  name = aws_autoscaling_group.nodejs.name
 }
 
 data "aws_instances" "nodejs_instances" {
-  for_each = local.autoscaling_group_names
-
   filter {
     name   = "tag:aws:autoscaling:groupName"
-    values = [each.key]
+    values = [data.aws_autoscaling_group.nodejs.name]
   }
 }
 
 output "nodejs_instance_ips" {
-  value = [for group_name, group in data.aws_autoscaling_groups.nodejs : [
-    for instance in group.instances : instance.private_ip
-  ]]
+  value       = [for instance in data.aws_instances.nodejs_instances.instances : instance.private_ip]
   description = "Private IP addresses of the Node.js instances"
 }
 
@@ -93,14 +104,4 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-}
-
-# Associate security group with the VPC
-resource "aws_security_group_rule" "nodejs_vpc_association" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.nodejs.id
 }
